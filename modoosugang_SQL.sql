@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture` (
   `lecture_id` VARCHAR(10) NOT NULL,
   `professor_id` VARCHAR(10) NOT NULL,
   `lecture_name` VARCHAR(50) NOT NULL,
-  `lecture_schedule` VARCHAR(10) NOT NULL,
   `lecture_limit` INT(11) NOT NULL,
   `lecture_credit` INT(11) NOT NULL,
   `lecture_major` VARCHAR(10) NOT NULL,
@@ -43,6 +42,8 @@ CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture` (
   `lecture_room` VARCHAR(10) NOT NULL,
   `lecture_semester` CHAR(6) NOT NULL,
   `lecture_proffessor` VARCHAR(30) NOT NULL,
+  `lecture_start_time` TIME NOT NULL,
+  `lecture_end_time` TIME NOT NULL,
   PRIMARY KEY (`lecture_id`),
   INDEX `fk_lecture_professor1_idx` (`professor_id` ASC) VISIBLE,
   CONSTRAINT `fk_lecture_professor1`
@@ -70,7 +71,7 @@ COLLATE = utf8mb4_unicode_ci;
 -- Table `modoosugang`.`manager`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`manager` (
-  `manager_id` VARCHAR(10) NOT NULL,
+  `manager_id` VARCHAR(14) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   `manager_email` VARCHAR(50) NOT NULL,
   `manager_pw` VARCHAR(20) NOT NULL,
@@ -92,7 +93,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `modoosugang`.`schedule` (
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
-  `manager_id` VARCHAR(10) NOT NULL,
+  `manager_id` VARCHAR(14) NOT NULL,
   `basket_start` DATETIME NOT NULL,
   `basket_end` DATETIME NOT NULL,
   `register_start` DATETIME NOT NULL,
@@ -123,7 +124,7 @@ COLLATE = utf8mb4_unicode_ci;
 -- Table `modoosugang`.`student`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`student` (
-  `student_id` VARCHAR(10) NOT NULL,
+  `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   `student_name` VARCHAR(30) NOT NULL,
@@ -153,7 +154,7 @@ COLLATE = utf8mb4_unicode_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`prefer_info` (
   `prefer_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `student_id` VARCHAR(10) NOT NULL,
+  `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   `major_credit` INT(11) NULL DEFAULT 0,
@@ -202,7 +203,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `modoosugang`.`student_log` (
   `log_id` INT(11) NOT NULL AUTO_INCREMENT,
   `lecture_id` VARCHAR(10) NOT NULL,
-  `student_id` VARCHAR(10) NOT NULL,
+  `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   `register_log` DATE NOT NULL,
@@ -233,7 +234,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `modoosugang`.`register_basket` (
   `register_basket_id` INT(11) NOT NULL AUTO_INCREMENT,
   `lecture_id` VARCHAR(10) NOT NULL,
-  `student_id` VARCHAR(10) NOT NULL,
+  `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`register_basket_id`, `lecture_id`, `student_id`, `semester`, `univ_name`),
@@ -258,7 +259,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `modoosugang`.`register_lecture` (
   `register_lecture_id` INT(11) NOT NULL AUTO_INCREMENT,
   `lecture_id` VARCHAR(10) NOT NULL,
-  `student_id` VARCHAR(10) NOT NULL,
+  `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`register_lecture_id`, `lecture_id`, `student_id`, `semester`, `univ_name`),
@@ -282,7 +283,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `modoosugang`.`schedule_professor` (
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
-  `manager_id` VARCHAR(10) NOT NULL,
+  `manager_id` VARCHAR(14) NOT NULL,
   `professor_id` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`semester`, `univ_name`, `manager_id`, `professor_id`),
   INDEX `fk_schedule_has_professor_professor1_idx` (`professor_id` ASC) VISIBLE,
