@@ -18,7 +18,7 @@ USE `modoosugang` ;
 -- Table `modoosugang`.`professor`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`professor` (
-  `professor_id` VARCHAR(10) NOT NULL,
+  `professor_id` VARCHAR(14) NOT NULL,
   `professor_name` VARCHAR(30) NOT NULL,
   `professor_major` VARCHAR(50) NULL DEFAULT NULL,
   `professor_email` VARCHAR(50) NOT NULL,
@@ -32,8 +32,9 @@ COLLATE = utf8mb4_unicode_ci;
 -- Table `modoosugang`.`lecture`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture` (
+  `lecture_index` INT(11) NOT NULL AUTO_INCREMENT,
+  `professor_id` VARCHAR(14) NOT NULL,
   `lecture_id` VARCHAR(10) NOT NULL,
-  `professor_id` VARCHAR(10) NOT NULL,
   `lecture_name` VARCHAR(50) NOT NULL,
   `lecture_limit` INT(11) NOT NULL,
   `lecture_credit` INT(11) NOT NULL,
@@ -45,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture` (
   `lecture_start_time` TIME NOT NULL,
   `lecture_end_time` TIME NOT NULL,
   `lecture_classify` VARCHAR(10) NOT NULL,
-  PRIMARY KEY (`lecture_id`),
+  PRIMARY KEY (`lecture_index`),
   INDEX `fk_lecture_professor1_idx` (`professor_id` ASC) VISIBLE,
   CONSTRAINT `fk_lecture_professor1`
     FOREIGN KEY (`professor_id`)
@@ -178,19 +179,19 @@ COLLATE = utf8mb4_unicode_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`requesting` (
   `requesting_id` INT(11) NOT NULL,
-  `professor_id` VARCHAR(10) NOT NULL,
-  `lecture_id` VARCHAR(10) NOT NULL,
+  `professor_id` VARCHAR(14) NOT NULL,
+  `lecture_index` INT(11) NOT NULL,
   PRIMARY KEY (`requesting_id`),
   INDEX `fk_requesting_professor1_idx` (`professor_id` ASC) VISIBLE,
-  INDEX `fk_requesting_lecture1_idx` (`lecture_id` ASC) VISIBLE,
+  INDEX `fk_requesting_lecture1_idx` (`lecture_index` ASC) VISIBLE,
   CONSTRAINT `fk_requesting_professor1`
     FOREIGN KEY (`professor_id`)
     REFERENCES `modoosugang`.`professor` (`professor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_requesting_lecture1`
-    FOREIGN KEY (`lecture_id`)
-    REFERENCES `modoosugang`.`lecture` (`lecture_id`)
+    FOREIGN KEY (`lecture_index`)
+    REFERENCES `modoosugang`.`lecture` (`lecture_index`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -203,25 +204,25 @@ COLLATE = utf8mb4_unicode_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`student_log` (
   `log_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `lecture_id` VARCHAR(10) NOT NULL,
   `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
+  `lecture_index` INT(11) NOT NULL,
   `register_log` DATE NOT NULL,
   `modify_log` DATE NULL DEFAULT NULL,
   `cancle_log` DATE NULL DEFAULT NULL,
   `retake_log` VARCHAR(2) NOT NULL,
-  PRIMARY KEY (`log_id`, `lecture_id`, `student_id`, `semester`, `univ_name`),
-  INDEX `fk_student_log_lecture1_idx` (`lecture_id` ASC) VISIBLE,
+  PRIMARY KEY (`log_id`, `student_id`, `semester`, `univ_name`, `lecture_index`),
   INDEX `fk_student_log_student1_idx` (`student_id` ASC, `semester` ASC, `univ_name` ASC) VISIBLE,
-  CONSTRAINT `fk_student_log_lecture1`
-    FOREIGN KEY (`lecture_id`)
-    REFERENCES `modoosugang`.`lecture` (`lecture_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_student_log_lecture1_idx` (`lecture_index` ASC) VISIBLE,
   CONSTRAINT `fk_student_log_student1`
     FOREIGN KEY (`student_id` , `semester` , `univ_name`)
     REFERENCES `modoosugang`.`student` (`student_id` , `semester` , `univ_name`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_student_log_lecture1`
+    FOREIGN KEY (`lecture_index`)
+    REFERENCES `modoosugang`.`lecture` (`lecture_index`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -234,21 +235,21 @@ COLLATE = utf8mb4_unicode_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`register_basket` (
   `register_basket_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `lecture_id` VARCHAR(10) NOT NULL,
   `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`register_basket_id`, `lecture_id`, `student_id`, `semester`, `univ_name`),
-  INDEX `fk_register_basket_lecture1_idx` (`lecture_id` ASC) VISIBLE,
+  `lecture_index` INT(11) NOT NULL,
+  PRIMARY KEY (`register_basket_id`, `student_id`, `semester`, `univ_name`, `lecture_index`),
   INDEX `fk_register_basket_student1_idx` (`student_id` ASC, `semester` ASC, `univ_name` ASC) VISIBLE,
-  CONSTRAINT `fk_register_basket_lecture1`
-    FOREIGN KEY (`lecture_id`)
-    REFERENCES `modoosugang`.`lecture` (`lecture_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_register_basket_lecture1_idx` (`lecture_index` ASC) VISIBLE,
   CONSTRAINT `fk_register_basket_student1`
     FOREIGN KEY (`student_id` , `semester` , `univ_name`)
     REFERENCES `modoosugang`.`student` (`student_id` , `semester` , `univ_name`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_register_basket_lecture1`
+    FOREIGN KEY (`lecture_index`)
+    REFERENCES `modoosugang`.`lecture` (`lecture_index`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -259,20 +260,21 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`register_lecture` (
   `register_lecture_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `lecture_id` VARCHAR(10) NOT NULL,
   `student_id` VARCHAR(14) NOT NULL,
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`register_lecture_id`, `lecture_id`, `student_id`, `semester`, `univ_name`),
+  `lecture_index` INT(11) NOT NULL,
+  PRIMARY KEY (`register_lecture_id`, `student_id`, `semester`, `univ_name`, `lecture_index`),
   INDEX `fk_register_lecture_student1_idx` (`student_id` ASC, `semester` ASC, `univ_name` ASC) VISIBLE,
-  CONSTRAINT `fk_register_lecture_lecture1`
-    FOREIGN KEY (`lecture_id`)
-    REFERENCES `modoosugang`.`lecture` (`lecture_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_register_lecture_lecture1_idx` (`lecture_index` ASC) VISIBLE,
   CONSTRAINT `fk_register_lecture_student1`
     FOREIGN KEY (`student_id` , `semester` , `univ_name`)
     REFERENCES `modoosugang`.`student` (`student_id` , `semester` , `univ_name`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_register_lecture_lecture1`
+    FOREIGN KEY (`lecture_index`)
+    REFERENCES `modoosugang`.`lecture` (`lecture_index`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -285,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `modoosugang`.`schedule_professor` (
   `semester` CHAR(6) NOT NULL,
   `univ_name` VARCHAR(50) NOT NULL,
   `manager_id` VARCHAR(14) NOT NULL,
-  `professor_id` VARCHAR(10) NOT NULL,
+  `professor_id` VARCHAR(14) NOT NULL,
   PRIMARY KEY (`semester`, `univ_name`, `manager_id`, `professor_id`),
   INDEX `fk_schedule_has_professor_professor1_idx` (`professor_id` ASC) VISIBLE,
   INDEX `fk_schedule_has_professor_schedule1_idx` (`semester` ASC, `univ_name` ASC, `manager_id` ASC) VISIBLE,
