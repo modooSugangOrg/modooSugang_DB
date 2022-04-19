@@ -179,20 +179,20 @@ COLLATE = utf8mb4_unicode_ci;
 -- Table `modoosugang`.`requesting`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`requesting` (
-  `requesting_id` INT(11) NOT NULL,
-  `professor_id` VARCHAR(14) NOT NULL,
+  `requesting_id` INT(11) NOT NULL AUTO_INCREMENT,
   `lecture_index` INT(11) NOT NULL,
-  PRIMARY KEY (`requesting_id`),
-  INDEX `fk_requesting_professor1_idx` (`professor_id` ASC) VISIBLE,
+  `professor_id` VARCHAR(14) NOT NULL,
+  PRIMARY KEY (`requesting_id`, `lecture_index`, `professor_id`),
   INDEX `fk_requesting_lecture1_idx` (`lecture_index` ASC) VISIBLE,
-  CONSTRAINT `fk_requesting_professor1`
-    FOREIGN KEY (`professor_id`)
-    REFERENCES `modoosugang`.`professor` (`professor_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_requesting_professor1_idx` (`professor_id` ASC) VISIBLE,
   CONSTRAINT `fk_requesting_lecture1`
     FOREIGN KEY (`lecture_index`)
     REFERENCES `modoosugang`.`lecture` (`lecture_index`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_requesting_professor1`
+    FOREIGN KEY (`professor_id`)
+    REFERENCES `modoosugang`.`professor` (`professor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
