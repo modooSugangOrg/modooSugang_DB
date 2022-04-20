@@ -29,10 +29,22 @@ COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
+-- Table `modoosugang`.`lecture_schedule`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture_schedule` (
+  `first_schedule` CHAR(10) NOT NULL,
+  `second_schedule` CHAR(10) NOT NULL,
+  PRIMARY KEY (`first_schedule`, `second_schedule`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `modoosugang`.`lecture`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture` (
   `lecture_index` INT(11) NOT NULL AUTO_INCREMENT,
+  `first_schedule` CHAR(10) NOT NULL,
+  `second_schedule` CHAR(10) NOT NULL,
   `professor_id` VARCHAR(14) NOT NULL,
   `lecture_id` VARCHAR(10) NOT NULL,
   `lecture_name` VARCHAR(50) NOT NULL,
@@ -44,15 +56,18 @@ CREATE TABLE IF NOT EXISTS `modoosugang`.`lecture` (
   `lecture_semester` CHAR(6) NOT NULL,
   `lecture_professor` VARCHAR(30) NOT NULL,
   `lecture_time` CHAR(34) NOT NULL,
-  `lecture_start_time` CHAR(5) NOT NULL,
-  `lecture_end_time` CHAR(5) NOT NULL,
-  `lecture_day` CHAR(2) NOT NULL,
   `lecture_classify` VARCHAR(10) NOT NULL,
-  PRIMARY KEY (`lecture_index`),
+  PRIMARY KEY (`lecture_index`, `first_schedule`, `second_schedule`),
   INDEX `fk_lecture_professor1_idx` (`professor_id` ASC) VISIBLE,
+  INDEX `fk_lecture_lecture_schedule1_idx` (`first_schedule` ASC, `second_schedule` ASC) VISIBLE,
   CONSTRAINT `fk_lecture_professor1`
     FOREIGN KEY (`professor_id`)
     REFERENCES `modoosugang`.`professor` (`professor_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_lecture_lecture_schedule1`
+    FOREIGN KEY (`first_schedule` , `second_schedule`)
+    REFERENCES `modoosugang`.`lecture_schedule` (`first_schedule` , `second_schedule`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
